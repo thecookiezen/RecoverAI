@@ -1,0 +1,14 @@
+recoverai:
+  chat-llm:
+    model: glm-4-flash
+    temperature: 0.0
+
+embabel:
+  agent:
+    shell:
+      redirect-log-to-file: true
+    logging:
+      personality: colossus
+
+  models:
+    default-llm: glm-4-flash

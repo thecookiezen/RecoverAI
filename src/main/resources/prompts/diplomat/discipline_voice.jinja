@@ -1,0 +1,18 @@
+{%- set discipline_lower = targetDiscipline.name() | lower | replace("_MANAGEMENT", "dev_management") -%}
+{%- if discipline_lower == "engineering" %}
+{% include "diplomat/disciplines/engineering.jinja" %}
+{%- elif discipline_lower == "product" %}
+{% include "diplomat/disciplines/product.jinja" %}
+{%- elif discipline_lower == "dev_management" %}
+{% include "diplomat/disciplines/dev_management.jinja" %}
+{%- elif discipline_lower == "leadership" %}
+{% include "diplomat/disciplines/leadership.jinja" %}
+{%- elif discipline_lower == "marketing" %}
+{% include "diplomat/disciplines/marketing.jinja" %}
+{%- elif discipline_lower == "finance" %}
+{% include "diplomat/disciplines/finance.jinja" %}
+{%- elif discipline_lower == "hr" %}
+{% include "diplomat/disciplines/hr.jinja" %}
+{%- else %}
+{% include "diplomat/disciplines/default.jinja" %}
+{%- endif %}

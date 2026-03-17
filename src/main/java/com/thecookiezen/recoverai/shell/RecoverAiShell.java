@@ -1,60 +1,78 @@
 package com.thecookiezen.recoverai.shell;
 
-import java.util.UUID;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStyle;
+import org.springframework.shell.standard.AbstractShellComponent;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
 
-import com.embabel.agent.api.identity.User;
-
+import com.embabel.agent.api.invocation.AgentInvocation;
+import com.embabel.agent.core.AgentPlatform;
+import com.embabel.agent.core.ProcessOptions;
+import com.embabel.agent.core.Verbosity;
 import com.embabel.agent.api.channel.MessageOutputChannelEvent;
 import com.embabel.agent.api.channel.OutputChannel;
 import com.embabel.agent.api.channel.OutputChannelEvent;
-import com.embabel.agent.api.identity.SimpleUser;
 import com.embabel.chat.AssistantMessage;
-import com.embabel.chat.Chatbot;
 import com.embabel.chat.Message;
-import com.embabel.chat.UserMessage;
+import com.thecookiezen.recoverai.intake.IntakeQuestionnaire;
 
 @ShellComponent
-class RecoverAiShell {
+class RecoverAiShell extends AbstractShellComponent {
     
-    private static final User ANONYMOUS_USER = new SimpleUser(
-            "anonymous",
-            "Anonymous User",
-            "anonymous",
-            null
-    );
+    private final AgentPlatform agentPlatform;;
+    private final IntakeQuestionnaire questionnaire;
 
-    Chatbot chatbot;
-    
-    public RecoverAiShell(Chatbot chatbot) {
-        this.chatbot = chatbot;
+    BlockingQueue<Message> queue = new ArrayBlockingQueue<Message>(10);
+    OutputChannel outputChannel = new QueueingOutputChannel(queue);
+
+    public RecoverAiShell(
+            AgentPlatform agentPlatform,
+            IntakeQuestionnaire questionnaire
+    ) {
+        this.agentPlatform = agentPlatform;
+        this.questionnaire = questionnaire;
     }
 
-    @ShellMethod("Displays greeting message to the user whose name is supplied")
-    public String echo(@ShellOption({"-N", "--name"}) String name) {
-        return String.format("Hello %s! You are running spring shell cli-demo.", name);
+    @ShellMethod("Run the full RecoverAI diagnostic workflow")
+    public String diagnose() {
+        var terminal = getTerminal();
+        var writer = terminal.writer();
+
+        try {
+            var style = new AttributedStyle().bold().foreground(AttributedStyle.CYAN);
+            writer.println(new AttributedString("\n+==========================================================+", style).toAnsi(terminal));
+            writer.println(new AttributedString("|          RecoverAI - Organizational Diagnosis           |", style).toAnsi(terminal));
+            writer.println(new AttributedString("+==========================================================+\n", style).toAnsi(terminal));
+            writer.flush();
+
+            var result = questionnaire.runQuestionnaire(terminal);
+            var inventory = result.inventory();
+
+            
+            var invocation = AgentInvocation
+                .builder(agentPlatform)
+                .options(new ProcessOptions()
+                    .withVerbosity(new Verbosity()
+                        .withShowPrompts(true)
+                        .withShowLlmResponses(true)
+                        .withDebug(true)))
+                .build(String.class);
+
+            return invocation.invoke(Map.of(
+                "request", inventory)
+            );
+
+        } catch (Exception e) {
+            return "Error during diagnosis: " + e.getMessage();
+        }
     }
 
-    @ShellMethod("Talk with LLM")
-    public String ask(@ShellOption({"--message"}) String ask) throws Exception {
-        var userMessage = new UserMessage(ask);
-
-        var queue = new ArrayBlockingQueue<Message>(10);
-        var outputChannel = new QueueingOutputChannel(queue);
-        var session = chatbot.createSession(ANONYMOUS_USER, outputChannel, UUID.randomUUID().toString(), null);
-        session.onUserMessage(userMessage);
-
-        var response = queue.poll(60, TimeUnit.SECONDS);
-        return response.getContent();
-    }
-
-        private record QueueingOutputChannel(BlockingQueue<Message> queue) implements OutputChannel {
+    private record QueueingOutputChannel(BlockingQueue<Message> queue) implements OutputChannel {
         @Override
         public void send(OutputChannelEvent event) {
             if (event instanceof MessageOutputChannelEvent msgEvent) {

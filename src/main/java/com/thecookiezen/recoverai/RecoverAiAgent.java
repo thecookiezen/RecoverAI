@@ -1,12 +1,18 @@
 package com.thecookiezen.recoverai;
 
-import com.embabel.agent.api.annotation.Action;
-import com.embabel.agent.api.annotation.EmbabelComponent;
-import com.embabel.agent.api.common.ActionContext;
-import com.embabel.chat.Conversation;
-import com.embabel.chat.UserMessage;
+import java.util.HashMap;
+import java.util.Map;
 
-@EmbabelComponent
+import com.embabel.agent.api.annotation.AchievesGoal;
+import com.embabel.agent.api.annotation.Action;
+import com.embabel.agent.api.annotation.Agent;
+import com.embabel.agent.api.annotation.Export;
+import com.embabel.agent.api.common.Ai;
+import com.thecookiezen.recoverai.domain.Assessment;
+import com.thecookiezen.recoverai.domain.RecoveryPlan;
+import com.thecookiezen.recoverai.intake.IntakeQuestionnaire.QuestionnaireResult;
+
+@Agent(description = "Helpful assistant that diagnose and recover from 'AI psychosis' - the organizational delusion that AI can solve all problems without proper processes")
 public class RecoverAiAgent {
 
     private final RecoverAiProperties properties;
@@ -15,13 +21,39 @@ public class RecoverAiAgent {
         this.properties = properties;
     }
 
-    @Action(canRerun = true, trigger = UserMessage.class)
-    void responde(Conversation conversation, ActionContext context) {
-        var assistantMessage = context.ai()
-                .withLlm(properties.chatLlm())
-                .withSystemPrompt("You are a helpful financial analyst.")
-                .respond(conversation.getMessages());
-        context.sendMessage(conversation.addMessage(assistantMessage));
+    @Action
+    Assessment diagnose(QuestionnaireResult questionnaireResult, Ai ai) {
+        return ai.withLlm(properties.chatLlm())
+            .rendering("diagnostician/diagnose")
+            .createObject(Assessment.class, Map.of(
+                    "observations", questionnaireResult.inventory().getObservations()
+            ));
     }
 
+    @Action
+    public RecoveryPlan formulateRecoveryPlan(Assessment diagnosis, QuestionnaireResult questionnaireResult, Ai ai) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("diagnosis", diagnosis);
+        model.put("userRole", questionnaireResult.userRole());
+        return ai.withDefaultLlm()
+            .rendering("strategist/recovery_plan")
+            .createObject(RecoveryPlan.class, model);
+    }
+
+    @Action
+    @AchievesGoal(description = "Generate a diplomatic communication script to address AI psychosis in an organization", 
+        export = @Export(
+                    remote = true,
+                    name = "recoverai-diagnose",
+                    startingInputTypes = {QuestionnaireResult.class})
+    )
+    public String generateDiplomaticScript(Assessment diagnosis, RecoveryPlan plan, QuestionnaireResult result, Ai ai) {
+        Map<String, Object> model = new HashMap<>();
+        model.put("diagnosis", diagnosis);
+        model.put("plan", plan);
+        model.put("targetDiscipline", result.discipline().name().toLowerCase());
+        return ai.withDefaultLlm()
+            .rendering("diplomat/communication")
+            .generateText(model);
+    }
 }

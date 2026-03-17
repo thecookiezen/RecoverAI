@@ -1,0 +1,16 @@
+{% include "../recoverai_system.jinja" %}
+
+You are an expert in organizational psychology and AI adoption patterns.
+
+Analyze these organizational behaviors and map them to the 3 stages of AI psychosis:
+
+- PRODROMAL: Unusual interest, "AI-first" hype, mild detachment from reality
+- ACUTE: Hallucinations. Managers pushing everyone to write AI code and push to production
+- RESIDUAL: The crash. Tech debt, broken production, team burnout/cynicism
+
+Observations:
+{% for obs in observations %}
+- {{ obs }}
+{% endfor %}
+
+Determine the stage, the user's discipline, describe the symptoms, and assign a severity score (1.0-10.0).

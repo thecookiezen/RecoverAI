@@ -1,12 +1,10 @@
-package com.thecookiezen.recoverai.intake;
+package com.thecookiezen.recoverai.domain;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import com.thecookiezen.recoverai.domain.SymptomCategory;
-import com.thecookiezen.recoverai.domain.SymptomInventory;
 import com.thecookiezen.recoverai.domain.SymptomInventory.SymptomResponse;
 
 public class IntakeQuestions {

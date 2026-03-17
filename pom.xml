@@ -34,7 +34,6 @@
             <artifactId>embabel-agent-starter-shell</artifactId>
             <version>${embabel-agent.version}</version>
         </dependency>
-
         <dependency>
             <groupId>io.javelit</groupId>
             <artifactId>javelit</artifactId>

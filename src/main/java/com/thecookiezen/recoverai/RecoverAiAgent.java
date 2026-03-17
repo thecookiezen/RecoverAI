@@ -1,7 +1,6 @@
 package com.thecookiezen.recoverai;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.embabel.agent.api.annotation.AchievesGoal;
@@ -10,7 +9,6 @@ import com.embabel.agent.api.annotation.Agent;
 import com.embabel.agent.api.annotation.Export;
 import com.embabel.agent.api.common.Ai;
 import com.thecookiezen.recoverai.domain.Assessment;
-import com.thecookiezen.recoverai.domain.Discipline;
 import com.thecookiezen.recoverai.domain.RecoveryPlan;
 import com.thecookiezen.recoverai.intake.IntakeQuestionnaire.QuestionnaireResult;
 
@@ -28,7 +26,7 @@ public class RecoverAiAgent {
         return ai.withLlm(properties.chatLlm())
             .rendering("diagnostician/diagnose")
             .createObject(Assessment.class, Map.of(
-                    "observations", questionnaireResult.inventory().getAllResponses()
+                    "observations", questionnaireResult.inventory().getObservations()
             ));
     }
 
@@ -43,17 +41,17 @@ public class RecoverAiAgent {
     }
 
     @Action
-    @AchievesGoal(description = "", 
+    @AchievesGoal(description = "Generate a diplomatic communication script to address AI psychosis in an organization", 
         export = @Export(
                     remote = true,
-                    name = "fixme",
+                    name = "recoverai-diagnose",
                     startingInputTypes = {QuestionnaireResult.class})
     )
     public String generateDiplomaticScript(Assessment diagnosis, RecoveryPlan plan, QuestionnaireResult result, Ai ai) {
         Map<String, Object> model = new HashMap<>();
         model.put("diagnosis", diagnosis);
         model.put("plan", plan);
-        model.put("targetDiscipline", result.discipline().toString());
+        model.put("targetDiscipline", result.discipline().name().toLowerCase());
         return ai.withDefaultLlm()
             .rendering("diplomat/communication")
             .generateText(model);

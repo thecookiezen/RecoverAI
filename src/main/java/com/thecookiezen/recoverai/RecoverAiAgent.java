@@ -35,7 +35,7 @@ public class RecoverAiAgent {
         Map<String, Object> model = new HashMap<>();
         model.put("diagnosis", diagnosis);
         model.put("userRole", questionnaireResult.userRole());
-        return ai.withDefaultLlm()
+        return ai.withLlm(properties.chatLlm())
             .rendering("strategist/recovery_plan")
             .createObject(RecoveryPlan.class, model);
     }
@@ -52,7 +52,7 @@ public class RecoverAiAgent {
         model.put("diagnosis", diagnosis);
         model.put("plan", plan);
         model.put("targetDiscipline", result.discipline().name().toLowerCase());
-        return ai.withDefaultLlm()
+        return ai.withLlm(properties.chatLlm())
             .rendering("diplomat/communication")
             .generateText(model);
     }

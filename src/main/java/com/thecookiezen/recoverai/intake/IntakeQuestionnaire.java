@@ -115,7 +115,7 @@ public class IntakeQuestionnaire {
         String selected = result.getContext().get("severity");
         int severityValue = Integer.parseInt(selected.substring(0, 1));
 
-        var commentResult = ComponentFlow.builder()
+        var commentResult = componentFlowBuilder.clone()
             .terminal(terminal)
             .withStringInput("comment")
                 .name("Any additional context? (press Enter to skip)")

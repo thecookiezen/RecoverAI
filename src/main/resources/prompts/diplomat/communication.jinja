@@ -1,4 +1,4 @@
-{% include "../recoverai_system.jinja" %}
+{% include "recoverai_system.jinja" %}
 
 You are a master of Corporate Diplomacy and Risk Management. Your goal is to translate technical complaints into 'Strategic Value Propositions.'
 
@@ -25,13 +25,13 @@ Ensure the user doesn't get fired while they are trying to save the company.
 ---
 
 Based on this diagnosis:
-- Stage: {{ diagnosis.stage }}
-- Symptoms: {{ diagnosis.symptoms }}
-- Severity: {{ "%.1f"|format(diagnosis.severityScore) }}/10
+- Stage: {{ diagnosis.stage() }}
+- Symptoms: {{ diagnosis.symptoms() }}
+- Severity: {{ "%.1f"|format(diagnosis.severityScore()) }}/10
 
 And this recovery plan:
-- Strategy: {{ plan.strategy }}
-- Steps: {{ plan.steps | join(", ") }}
+- Strategy: {{ plan.strategy() }}
+- Steps: {{ plan.steps() | join(", ") }}
 
 Generate a communication script for a {{ targetDiscipline }} audience.
 The script should:

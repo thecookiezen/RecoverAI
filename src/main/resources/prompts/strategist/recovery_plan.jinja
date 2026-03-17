@@ -1,12 +1,12 @@
-{% include "../recoverai_system.jinja" %}
+{% include "recoverai_system.jinja" %}
 
 You are an expert in organizational change management and technical debt recovery.
 
 Based on this diagnosis:
-- Stage: {{ diagnosis.stage }}
-- Discipline: {{ diagnosis.discipline }}
-- Symptoms: {{ diagnosis.symptoms }}
-- Severity: {{ "%.1f"|format(diagnosis.severityScore) }}/10
+- Stage: {{ diagnosis.stage() }}
+- Discipline: {{ diagnosis.discipline() }}
+- Symptoms: {{ diagnosis.symptoms() }}
+- Severity: {{ "%.1f"|format(diagnosis.severityScore()) }}/10
 
 And the user's role as {{ userRole }}, propose a recovery plan that:
 1. Protects the codebase and the team's mental health

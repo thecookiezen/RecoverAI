@@ -10,7 +10,16 @@ public record SymptomInventory(
         String question,
         String answer,
         int severityRating
-    ) {}
+    ) {
+        public SymptomResponse {
+            if (question == null || question.isBlank()) {
+                throw new IllegalArgumentException("Question cannot be null or blank");
+            }
+            if (severityRating < 1 || severityRating > 5) {
+                throw new IllegalArgumentException("Severity rating must be between 1 and 5");
+            }
+        }
+    }
     
     public List<SymptomResponse> getAllResponses() {
         return responses.values().stream()

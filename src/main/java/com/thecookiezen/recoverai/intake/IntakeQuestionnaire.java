@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.thecookiezen.recoverai.domain.Discipline;
 import com.thecookiezen.recoverai.domain.IntakeQuestions;
+import com.thecookiezen.recoverai.domain.Severity;
 import com.thecookiezen.recoverai.domain.SymptomCategory;
 import com.thecookiezen.recoverai.domain.SymptomInventory;
 import com.thecookiezen.recoverai.domain.SymptomInventory.SymptomResponse;
@@ -20,7 +21,6 @@ import com.thecookiezen.recoverai.domain.SymptomInventory.SymptomResponse;
 @Component
 public class IntakeQuestionnaire {
 
-    private static final String[] SEVERITY_OPTIONS = {"1 - Not at all", "2 - Rarely", "3 - Sometimes", "4 - Often", "5 - Very frequently"};
     private static final AttributedStyle CYAN_BOLD = new AttributedStyle().bold().foreground(AttributedStyle.CYAN);
     private static final AttributedStyle YELLOW_BOLD = new AttributedStyle().bold().foreground(AttributedStyle.YELLOW);
     private static final AttributedStyle ITALIC = new AttributedStyle().italic();
@@ -71,6 +71,7 @@ public class IntakeQuestionnaire {
             .terminal(terminal)
             .withStringInput("role")
                 .name("What is your specific job title? (e.g., Senior Software Engineer, Product Manager)")
+                .defaultValue("Unspecified")
                 .and()
             .build()
             .run();
@@ -98,8 +99,8 @@ public class IntakeQuestionnaire {
 
     private SymptomResponse askSymptomQuestion(String question, Terminal terminal) {
         List<SelectItem> severityItems = new ArrayList<>();
-        for (String option : SEVERITY_OPTIONS) {
-            severityItems.add(SelectItem.of(option, option));
+        for (Severity severity : Severity.values()) {
+            severityItems.add(SelectItem.of(severity.getDisplayText(), severity.getDisplayText()));
         }
 
         var result = componentFlowBuilder.clone()
@@ -112,7 +113,7 @@ public class IntakeQuestionnaire {
             .run();
 
         String selected = result.getContext().get("severity");
-        int severity = Integer.parseInt(selected.substring(0, 1));
+        int severityValue = Integer.parseInt(selected.substring(0, 1));
 
         var commentResult = ComponentFlow.builder()
             .terminal(terminal)
@@ -124,11 +125,11 @@ public class IntakeQuestionnaire {
             .run();
 
         String comment = commentResult.getContext().get("comment");
-        String answer = (comment == null || comment.isEmpty()) 
-            ? (severity <= 2 ? "No/Minimal" : severity <= 3 ? "Moderate" : "Significant") 
+        String answer = (comment == null || comment.isEmpty())
+            ? Severity.fromValue(severityValue).getLabel()
             : comment;
 
-        return new SymptomResponse(question, answer, severity);
+        return new SymptomResponse(question, answer, severityValue);
     }
 
     public record QuestionnaireResult (

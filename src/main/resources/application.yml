@@ -1,6 +1,6 @@
 recoverai:
   chat-llm:
-    model: glm-4-flash
+    model: glm-5
     temperature: 0.0
 
 embabel:
@@ -11,4 +11,4 @@ embabel:
       personality: colossus
 
   models:
-    default-llm: glm-4-flash
+    default-llm: glm-5

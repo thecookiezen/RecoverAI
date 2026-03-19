@@ -27,7 +27,7 @@ public class ZaiModelsConfig extends OpenAiCompatibleModelFactory {
     @Bean
     public LlmService<?> zaiModel() {
         return openAiCompatibleLlm(
-            "glm-4-flash",
+            "glm-5",
             PricingModel.usdPer1MTokens(1.0, 3.0),
             "Z.AI",
             null

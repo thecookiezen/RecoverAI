@@ -3,6 +3,12 @@ recoverai:
     model: glm-5
     temperature: 0.0
 
+agenticmemory:
+  chat-llm:
+    model: glm-5
+    temperature: 0.3
+  neighbors-k: 5
+
 embabel:
   agent:
     shell:
@@ -12,3 +18,10 @@ embabel:
 
   models:
     default-llm: glm-5
+
+spring:
+  profiles:
+    active: ladybugdb
+
+ladybugdb:
+  data-dir: ./data/ladybugdb

@@ -52,7 +52,7 @@ public class RecoverAiAgent {
     }
 
     @Action
-    @AchievesGoal(description = "Generate a diplomatic communication script to address AI psychosis in an organization",
+    @AchievesGoal(description = "Generate a diplomatic communication script to address AI psychosis in an organization and store the result in agentic memory",
         export = @Export(
                     remote = true,
                     name = "recoverai-diagnose",

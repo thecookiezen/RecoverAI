@@ -35,8 +35,22 @@ Engineering, Product, Dev Management, Leadership, Marketing, Finance, and HR
 
 - Java 21
 - Maven
-- API key for one of the supported model providers:
-  - OpenAI-compatible APIs via custom endpoint (`OPENAI_CUSTOM_API_KEY`)
+
+## Configuration
+
+Set the following environment variables for LLM configuration:
+
+```bash
+OPENAI_CUSTOM_BASE_URL=https://api.example.com
+OPENAI_CUSTOM_MODELS=model-name
+OPENAI_CUSTOM_API_KEY=your_api_key
+```
+
+Optionally, set `OPENAI_CUSTOM_COMPLETIONS_PATH` if the completions endpoint differs from the default OpenAI path (`/v1/chat/completions`):
+
+```bash
+OPENAI_CUSTOM_COMPLETIONS_PATH=/custom/chat/completions
+```
 
 ## Building
 
@@ -58,10 +72,19 @@ mvn spring-boot:run
 
 Once running, use the `diagnose` command to start the assessment.
 
+### Available Commands
+
+| Command | Description |
+|---------|-------------|
+| `diagnose` | Run the full diagnostic workflow |
+| `memoryFetch <query>` | Search memory notes using vector similarity |
+| `memoryWrite <text>` | Store text in memory for later retrieval |
+
 ## Technology Stack
 
 - Spring Boot 3.5
 - [Embabel Agent](https://github.com/embabel/embabel-agent) 0.3.4 - AI agent framework
+- [Archiledger](https://github.com/thecookiezen/archiledger) - Knowledge graph builder using memory notes, where the LLM classifies AI psychosis analyses
 - Spring Shell - Interactive CLI
 
 ## License

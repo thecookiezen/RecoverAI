@@ -1,4 +1,4 @@
-package com.thecookiezen.agenticmemory.event;
+package com.thecookiezen.recoverai;
 
 import com.embabel.agent.api.event.AgenticEventListener;
 import com.embabel.agent.api.invocation.AgentInvocation;
@@ -7,11 +7,12 @@ import com.embabel.agent.api.event.AgentProcessCompletedEvent;
 import com.embabel.agent.core.AgentPlatform;
 import com.embabel.agent.core.ProcessOptions;
 import com.embabel.agent.core.Verbosity;
-import com.thecookiezen.agenticmemory.domain.UpsertMemoryRequest;
+import com.thecookiezen.archiledger.agenticmemory.domain.UpsertMemoryRequest;
 import com.thecookiezen.archiledger.domain.model.MemoryNote;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,7 +22,7 @@ public class MemoryAgentEventListener implements AgenticEventListener {
 
     private final AgentPlatform agentPlatform;
 
-    public MemoryAgentEventListener(AgentPlatform agentPlatform) {
+    public MemoryAgentEventListener(@Lazy AgentPlatform agentPlatform) {
         this.agentPlatform = agentPlatform;
         logger.info("MemoryAgentEventListener registered");
     }

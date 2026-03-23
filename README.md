@@ -35,9 +35,7 @@ Engineering, Product, Dev Management, Leadership, Marketing, Finance, and HR
 
 - Java 21
 - Maven
-- API key for one of the supported model providers (auto-detected via environment variables):
-  - OpenAI (`OPENAI_API_KEY`)
-  - Anthropic (`ANTHROPIC_API_KEY`)
+- API key for one of the supported model providers:
   - OpenAI-compatible APIs via custom endpoint (`OPENAI_CUSTOM_API_KEY`)
 
 ## Building

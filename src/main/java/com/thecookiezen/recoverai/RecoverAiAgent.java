@@ -7,14 +7,13 @@ import java.util.Map;
 import com.embabel.agent.api.annotation.AchievesGoal;
 import com.embabel.agent.api.annotation.Action;
 import com.embabel.agent.api.annotation.Agent;
-import com.embabel.agent.api.annotation.Export;
 import com.embabel.agent.api.common.Ai;
 import com.embabel.agent.rag.tools.ToolishRag;
 import com.thecookiezen.recoverai.domain.Assessment;
 import com.thecookiezen.recoverai.domain.RecoveryPlan;
 import com.thecookiezen.recoverai.intake.IntakeQuestionnaire.QuestionnaireResult;
-import com.thecookiezen.recoverai.rag.MemoryNoteRetrievable;
-import com.thecookiezen.recoverai.rag.MemoryNoteSearchOperations;
+import com.thecookiezen.archiledger.agenticmemory.rag.MemoryNoteRetrievable;
+import com.thecookiezen.archiledger.agenticmemory.rag.MemoryNoteSearchOperations;
 
 @Agent(description = "Helpful assistant that diagnose and recover from 'AI psychosis' - the organizational delusion that AI can solve all problems without proper processes")
 public class RecoverAiAgent {
@@ -52,12 +51,7 @@ public class RecoverAiAgent {
     }
 
     @Action
-    @AchievesGoal(description = "Generate a diplomatic communication script to address AI psychosis in an organization and store the result in agentic memory",
-        export = @Export(
-                    remote = true,
-                    name = "recoverai-diagnose",
-                    startingInputTypes = {QuestionnaireResult.class})
-    )
+    @AchievesGoal(description = "Generate a diplomatic communication script to address AI psychosis in an organization")
     public String generateDiplomaticScript(Assessment diagnosis, RecoveryPlan plan, QuestionnaireResult result, Ai ai) {
         Map<String, Object> model = new HashMap<>();
         model.put("diagnosis", diagnosis);

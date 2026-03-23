@@ -12,8 +12,13 @@ import com.embabel.agent.api.invocation.AgentInvocation;
 import com.embabel.agent.core.AgentPlatform;
 import com.embabel.agent.core.ProcessOptions;
 import com.embabel.agent.core.Verbosity;
+import com.embabel.common.core.types.TextSimilaritySearchRequest;
+import com.thecookiezen.archiledger.agenticmemory.domain.UpsertMemoryRequest;
+import com.thecookiezen.archiledger.domain.model.MemoryNote;
 import com.thecookiezen.recoverai.intake.IntakeQuestionnaire;
 import com.thecookiezen.recoverai.intake.IntakeQuestionnaire.QuestionnaireResult;
+import com.thecookiezen.archiledger.agenticmemory.rag.MemoryNoteRetrievable;
+import com.thecookiezen.archiledger.agenticmemory.rag.MemoryNoteSearchOperations;
 
 @ShellComponent
 class RecoverAiShell extends AbstractShellComponent {
@@ -22,13 +27,32 @@ class RecoverAiShell extends AbstractShellComponent {
 
     private final AgentPlatform agentPlatform;
     private final IntakeQuestionnaire questionnaire;
+    private final MemoryNoteSearchOperations search;
 
-    public RecoverAiShell(
-            AgentPlatform agentPlatform,
-            IntakeQuestionnaire questionnaire
-    ) {
+    public RecoverAiShell(AgentPlatform agentPlatform, IntakeQuestionnaire questionnaire, MemoryNoteSearchOperations memoryNoteSearchOperations) {
         this.agentPlatform = agentPlatform;
         this.questionnaire = questionnaire;
+        this.search = memoryNoteSearchOperations;
+    }
+
+    @ShellMethod("memory read test")
+    public String memoryFetch(String request) {
+        return search.vectorSearch(TextSimilaritySearchRequest.create(request, 0, 10), MemoryNoteRetrievable.class).toString();
+    }
+
+    @ShellMethod("memory write test")
+    public void memoryWrite(String... args) {
+        String request = String.join(" ", args);
+        var invocation = AgentInvocation
+            .builder(agentPlatform)
+            .options(new ProcessOptions()
+                .withVerbosity(new Verbosity()
+                    .withShowPrompts(true)
+                    .withShowLlmResponses(true)
+                    .withDebug(true)))
+            .build(MemoryNote.class);
+
+        invocation.invoke(new UpsertMemoryRequest(request));
     }
 
     @ShellMethod("Run the full RecoverAI diagnostic workflow")
